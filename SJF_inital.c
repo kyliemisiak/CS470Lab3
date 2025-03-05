@@ -1,3 +1,7 @@
+//CS 470 Lab 3
+
+
+//headers
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
@@ -19,7 +23,7 @@ int findNextProcess(Process proc[], int current_time) {
     int min_time = INT_MAX;
     int index = -1;
     for (int i = 0; i < n; i++) {
-	
+
 	//if process arrival time is less than curr time and process has not been completed
 	if (proc[i].arrival_time <= current_time && !proc[i].is_completed) {
             if (proc[i].remaining_time < min_time) {
@@ -43,19 +47,18 @@ void srtf(Process proc[]) {
         proc[i].waiting_time = 0;
         proc[i].turnaround_time = 0;
         proc[i].is_completed = 0;
-    } 
+    }
 
 
     // Build the loop to execute processes in the queue list
     while (completed != n) {
         int index = findNextProcess(proc, current_time);
         //Process found to execute
-
         Process *p = &proc[index];
-        
+
         //update remaining time of process
         p->remaining_time--;
-        
+
         //if process is completed, update turnaround and waiting time
         if (p->remaining_time == 0){
             p->is_completed = 1;
@@ -83,7 +86,6 @@ int main() {
     // Initialize processes with their IDs, arrival times, and burst times
     Process proc[] = {{1, 0, 8}, {2, 1, 4}, {3, 2, 9}, {4, 3, 5}};
     n = sizeof(proc) / sizeof(proc[0]);
-
     srtf(proc);
     printProcesses(proc);
 

@@ -1,3 +1,6 @@
+//CS 470 Lab 3
+
+//headers
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -10,37 +13,65 @@ typedef struct {
     int turnaround_time;
 } Process;
 
-
-
 // Function to calculate waiting times and execution order for all processes
 void calculateWaitingTimeAndExecutionOrder(Process proc[], int n, int quantum) {
-    // Array to store remaining burst times
-    // Assuming a maximum of 1000 executions for simplicity
+	//initialize variables
+	int time = 0;
+	int doneCount = 0;
+	char execOrder[1000];
+	int execIndex = 0;
 
-    
+	//initialize remaining times and waiting times
+    	for (int i = 0; i < n; i++) {
+		//remaining time
+        	proc[i].remaining_time = proc[i].burst_time;
+        	//waiting time
+		proc[i].waiting_time = 0;
+   	 }
 
-    // Current time
-
-    // Keep traversing processes in round-robin manner until all of them are not done
-    while (1) {
-        int done = 1;
+    //round robin scheduling loop
+    while (doneCount < n) {
         for (int i = 0; i < n; i++) {
-            // If burst time of a process is greater than 0 then only need to process further
-            
-        }
+            if (proc[i].remaining_time > 0) {
+                //if process has remaining time
+                int execution_time = (proc[i].remaining_time > quantum) ? quantum : proc[i].remaining_time;
 
-        // If all processes are done
-        if (done == 1) break;
+                //add process to exec order
+		//show format "P1 P2 P3.." like class example
+                execOrder[execIndex++] = 'P';
+		execOrder[execIndex++] = proc[i].process_id + '0';
+
+                //update time and remaining time of process
+                time += execution_time;
+                proc[i].remaining_time -= execution_time;
+
+                //if process is done, update the done count
+                if (proc[i].remaining_time == 0) {
+			proc[i].turnaround_time = time - proc[i].arrival_time;
+			proc[i].waiting_time = proc[i].turnaround_time - proc[i].burst_time;
+			doneCount++;
+                }
+            }
+        }
     }
+
 
     // Print the execution order
     printf("Execution Order: ");
-    
+    for (int i = 0; i < execIndex; i++) {
+        if (i > 0) printf(" ");
+        printf("%c%c", execOrder[i], execOrder[i+1]);
+	i++;
+    }
+    printf("\n");
 }
 
 // Function to calculate turnaround times for all processes
 void calculateTurnaroundTime(Process proc[], int n) {
-   
+   for (int i = 0; i < n; i++) {
+        //turnaround time
+        proc[i].turnaround_time = proc[i].waiting_time + proc[i].burst_time;
+    }
 }
 
 void roundRobin(Process proc[], int n, int quantum) {
@@ -61,7 +92,7 @@ int main() {
     Process proc[] = {{1, 0, 24}, {2, 0, 3}, {3, 0, 3}};
     int n = sizeof(proc) / sizeof(proc[0]); // Number of processes
     int quantum = 4; // Time quantum for Round Robin scheduling
- 
+
 
     roundRobin(proc, n, quantum);
     printProcesses(proc, n);
