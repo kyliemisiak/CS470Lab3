@@ -19,8 +19,14 @@ int findNextProcess(Process proc[], int current_time) {
     int min_time = INT_MAX;
     int index = -1;
     for (int i = 0; i < n; i++) {
-        // your code
-        
+	
+	//if process arrival time is less than curr time and process has not been completed
+	if (proc[i].arrival_time <= current_time && !proc[i].is_completed) {
+            if (proc[i].remaining_time < min_time) {
+                min_time = proc[i].remaining_time;
+                index = i;
+            }
+        }
     }
     return index;
 }
@@ -29,16 +35,37 @@ int findNextProcess(Process proc[], int current_time) {
 void srtf(Process proc[]) {
     int current_time = 0;
     int completed = 0;
-    int prev = -1;
+    //int prev = -1;
 
     // Initialize waiting and turnaround times
-    
+   for (int i = 0; i < n; i++) {
+        proc[i].remaining_time = proc[i].burst_time;
+        proc[i].waiting_time = 0;
+        proc[i].turnaround_time = 0;
+        proc[i].is_completed = 0;
+    } 
+
+
     // Build the loop to execute processes in the queue list
     while (completed != n) {
         int index = findNextProcess(proc, current_time);
         //Process found to execute
 
+        Process *p = &proc[index];
         
+        //update remaining time of process
+        p->remaining_time--;
+        
+        //if process is completed, update turnaround and waiting time
+        if (p->remaining_time == 0){
+            p->is_completed = 1;
+            completed++;
+            p->turnaround_time = current_time + 1 - p->arrival_time;
+            p->waiting_time = p->turnaround_time - p->burst_time;
+        }
+
+        //increase current time
+        current_time++;
     }
 }
 
